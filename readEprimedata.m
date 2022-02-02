@@ -7,9 +7,9 @@ subjlist = dir('*.txt');
 dropinvalids = 1; %first N trials per Nback
 
 subjectpool = 'drop_lowdprime'; % see options below
-drop_lowdprime = 0; %  compute d' of each subject and drop if 1back < 1
+drop_lowdprime = 1; %  compute d' of each subject and drop if 1back < 1
 drop_lowdprime_and_gelman_rubin = 0;
-drop_lowdprime_and_gelman_rubin2 = 1;
+drop_lowdprime_and_gelman_rubin2 = 0;
 
 % N=156 list, hand-repaired 015 filename
 switch subjectpool
@@ -147,21 +147,33 @@ for isub = 1:nsub % 131 has only 27 blocks
       accuracy(end+1,1) = targets(itrial) == response(end); %0=notarget, 2 = no response. nan==nan is false
       % ACC field seems broken
 %       accuracy(end+1,1) = block(iblock).SubBlockHapps.(sprintf('TextDisplay%d',itrial+(nback_cond-1)*10)).ACC; % correct?
-      trialno(end+1,1)  = trial_ctr;
+      trialno(end+1,1)  = itrial;
       novelty(end+1,1)  = ~familiar(itrial);
       %       % has stim info:
       %       block(1).MainBlockHapps
       trial_ctr = trial_ctr + 1;
-      if iblock < 10 % 2/3 of data (27 blocks)
+      %       if iblock < 10 % 2/3 of data (27 blocks)
+      %         early(end+1,1) = 1;
+      %         late(end+1,1) = 0;
+      %       elseif iblock > 9 && iblock < 19 % 2/3 of data
+      %         early(end+1,1) = 1;
+      %         late(end+1,1) = 1;
+      %       elseif iblock > 18
+      %         early(end+1,1) = 0;
+      %         late(end+1,1) = 1;
+      %       end
+
+      if itrial < 7 % for 2back, 4/8 trials: 3,4,5,6  , 3back, 4/7 trials
         early(end+1,1) = 1; 
         late(end+1,1) = 0; 
-      elseif iblock > 9 && iblock < 19 % 2/3 of data
+      elseif itrial > 4 && itrial < 8 % trialno 5,6,7
         early(end+1,1) = 1; 
         late(end+1,1) = 1;
-      elseif iblock > 18
+      elseif itrial >= 7 % 7,8,9,10
         early(end+1,1) = 0; 
         late(end+1,1) = 1;         
       end
+      
     end
   end
 %   %  compute dprime 1-back, keep track of low subjects NO done in plotSDT_DDMpars

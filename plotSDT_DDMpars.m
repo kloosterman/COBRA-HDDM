@@ -11,9 +11,13 @@ addpath('/Users/kloosterman/Dropbox/tardis_code/MATLAB/tools/custom_tools/plotti
 % csv = readtable('/Users/kloosterman/Dropbox/PROJECTS/COBRA/hddm/123back_bias_novelvsfam/data/COBRA_DDMdata_drop_lowdprime.csv');
 % ddm = readtable('/Users/kloosterman/Dropbox/PROJECTS/COBRA/hddm/123back_bias_novelvsfam/data/params__biasmodel.csv');
 
-% % % N=152, HDDM2, 15 chains
+% % % % N=152, HDDM2, 15 chains
+% csv = readtable('/Users/kloosterman/Dropbox/PROJECTS/COBRA/hddm/123back_bias_novelvsfam/data/COBRA_DDMdata_drop_lowdprime.csv');
+% ddm = readtable('/Users/kloosterman/Dropbox/PROJECTS/COBRA/hddm/123back_bias_novelvsfam/data/params__biasmodel_drop_lowdprime.csv');
+
+% % % N=152, only early trials in block
 csv = readtable('/Users/kloosterman/Dropbox/PROJECTS/COBRA/hddm/123back_bias_novelvsfam/data/COBRA_DDMdata_drop_lowdprime.csv');
-ddm = readtable('/Users/kloosterman/Dropbox/PROJECTS/COBRA/hddm/123back_bias_novelvsfam/data/params__biasmodel_drop_lowdprime.csv');
+ddm = readtable('/Users/kloosterman/Dropbox/PROJECTS/COBRA/hddm/123back_bias_novelvsfam/data/params_run_biasmodel_early_drop_lowdprime.csv');
 
 
 % N = 148, has 2 more subjects with G-R above 1.1
