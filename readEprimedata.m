@@ -36,7 +36,7 @@ switch subjectpool
       "192","193","194","195","196","197","199","200","201","203","204","206","208","210","211","212","213","214", ...
       "216","217","219"];
     
-%     subjlist = ["028" "091" "137" "198"] % dropped ones
+    %     subjlist = ["028" "091" "137" "198"] % dropped ones
     
   case 'drop_lowdprime_and_gelman_rubin' % after running HDDM on droplowdprime data: COBRAids 41    82   162   181 are too high
     % N=148 list,
@@ -71,23 +71,23 @@ rhos=[];
 nsub = length(subjlist);
 dprime = NaN(nsub,2); % keep track of low dprime 1back
 for isub = 1:nsub % 131 has only 27 blocks
-%   % [block, RunningList, LevelList, OnsetLists, OnsetList] = ...
-%   %   dz_InterpreteEprimefile(file, TR, strOnsetTime) % , ProcNameOfFirstOnset, HappNameOfFirstOnset
-%   block = dz_InterpreteEprimefile(subjlist(isub).name, 2, []); % , ProcNameOfFirstOnset, HappNameOfFirstOnset
+  %   % [block, RunningList, LevelList, OnsetLists, OnsetList] = ...
+  %   %   dz_InterpreteEprimefile(file, TR, strOnsetTime) % , ProcNameOfFirstOnset, HappNameOfFirstOnset
+  %   block = dz_InterpreteEprimefile(subjlist(isub).name, 2, []); % , ProcNameOfFirstOnset, HappNameOfFirstOnset
   
   file = dir(sprintf('*-%s-*.txt', subjlist(isub)));
   block = dz_InterpreteEprimefile(file.name, 2, []); % , ProcNameOfFirstOnset, HappNameOfFirstOnset
   
   if length(block) < 28
     fprintf('%s has fewer than 28 blocks\n', file.name)
-%     continue
+    %     continue
   end
   for iblock = 1:length(block)-1 % last block has session info only
     nback_cond = block(iblock).MainBlockHapps.tasktype;
     if nback_cond==0 % 1-back is tasktype zero...
       nback_cond = 1;
     end
-
+    
     stims = NaN(10,1);
     familiar = NaN(10,1);
     for istim = 1:10 % get stims out to figure out which ones were targets
@@ -106,7 +106,7 @@ for isub = 1:nsub % 131 has only 27 blocks
     targets = NaN(10,1); % can be removed later if invalid first N trials should go
     temp = (stims(1+nback_cond:end) - stims(1:end-nback_cond)) == 0;
     targets(1+nback_cond:end) = temp;
-
+    
     for itrial = 1:10
       % has behavior:
       %       block(1).SubBlockHapps.TextDisplay1
@@ -115,7 +115,7 @@ for isub = 1:nsub % 131 has only 27 blocks
         warning('Trial not found')
         continue % to next trial
       end
-        
+      
       % turn into csv, cols:  % subj_idx	COBRA_ID	stim	rt
       % accuracy	response	trialno	stimulus novelty
       subj_idx(end+1,1) = subj_ctr;
@@ -125,13 +125,13 @@ for isub = 1:nsub % 131 has only 27 blocks
       rt(end+1,1)       = block(iblock).SubBlockHapps.(trialfield).RT/1000;
       
       % button pressed: 1=yes, 2=no
-      RESP = block(iblock).SubBlockHapps.(trialfield).RESP; 
+      RESP = block(iblock).SubBlockHapps.(trialfield).RESP;
       if ~isempty(RESP)
         if strcmp(subjlist(isub), '119') || strcmp(subjlist(isub), '136') % two subj with different RESP vals
           if RESP == 2 % seems to be yes response OR 3 is no, 2 is yes for 119 and 136?
-            response(end+1,1) = 1;    
+            response(end+1,1) = 1;
           elseif RESP == 3 ||  RESP == 9  % 9 is also there (1 trial)
-            response(end+1,1) = 0;    
+            response(end+1,1) = 0;
           end
         else
           if RESP == 1 % Yes response
@@ -146,7 +146,7 @@ for isub = 1:nsub % 131 has only 27 blocks
       
       accuracy(end+1,1) = targets(itrial) == response(end); %0=notarget, 2 = no response. nan==nan is false
       % ACC field seems broken
-%       accuracy(end+1,1) = block(iblock).SubBlockHapps.(sprintf('TextDisplay%d',itrial+(nback_cond-1)*10)).ACC; % correct?
+      %       accuracy(end+1,1) = block(iblock).SubBlockHapps.(sprintf('TextDisplay%d',itrial+(nback_cond-1)*10)).ACC; % correct?
       trialno(end+1,1)  = itrial;
       novelty(end+1,1)  = ~familiar(itrial);
       %       % has stim info:
@@ -162,41 +162,79 @@ for isub = 1:nsub % 131 has only 27 blocks
       %         early(end+1,1) = 0;
       %         late(end+1,1) = 1;
       %       end
-
-      if itrial < 7 % for 2back, 4/8 trials: 3,4,5,6  , 3back, 4/7 trials
-        early(end+1,1) = 1; 
-        late(end+1,1) = 0; 
-      elseif itrial > 4 && itrial < 8 % trialno 5,6,7
-        early(end+1,1) = 1; 
-        late(end+1,1) = 1;
-      elseif itrial >= 7 % 7,8,9,10
-        early(end+1,1) = 0; 
-        late(end+1,1) = 1;         
+      
+      
+      %       if itrial < 9 % 1:8
+      %         early(end+1,1) = 1;
+      %         late(end+1,1) = 0;
+      %       elseif itrial > 4 % && itrial <= 8 % trialno 5,6,7
+      %         early(end+1,1) = 1;
+      %         late(end+1,1) = 1;
+      %       elseif itrial >= 4 % 7,8,9,10
+      %         early(end+1,1) = 0;
+      %         late(end+1,1) = 1;
+      %       end
+      
+      if ismember(itrial, 1:4)
+        early(end+1,1)  = 1;
+        late(end+1,1) = 0;
+      elseif ismember(itrial, 5:8)
+        early(end+1,1) = 1;
+        late(end+1,1)  = 1;      
+      elseif ismember(itrial, 9:10)
+        early(end+1,1) = 0;
+        late(end+1,1)  = 1;
       end
+      
+      %       if ~ismember(itrial, 1:10)
+      %         error('weird trialno!')
+      %       end
+      %       if nback_cond == 1
+      %         if ismember(itrial, 1:8)
+      %           timeinblock(end+1,1) = 1;
+      %         elseif ismember(itrial, 4:10)
+      %           timeinblock(end+1,1) = 2;
+      %         end
+      %       elseif nback_cond == 2
+      %         if ismember(itrial, 1:8)
+      %           timeinblock(end+1,1) = 1;
+      %         elseif ismember(itrial, 5:10)
+      %           timeinblock(end+1,1) = 2;
+      %         end
+      %       elseif nback_cond == 3
+      %         if ismember(itrial, 1:8)
+      %           timeinblock(end+1,1) = 1;
+      %         elseif ismember(itrial, 6:10)
+      %           timeinblock(end+1,1) = 2;
+      %         end
+      %       else
+      %         disp('Unknown condition??')
+      %       end
+      
       
     end
   end
-%   %  compute dprime 1-back, keep track of low subjects NO done in plotSDT_DDMpars
-%   subjdat = [stimulus(subj_idx == subj_ctr & stim == 1) response(subj_idx == subj_ctr & stim == 1)]; % stim=1: 1back
-%   subjdat = subjdat(all(~isnan(subjdat),2),:); % col1 stimulus, col2 response
-%   H = sum(subjdat(:,1) == 1 & subjdat(:,2) == 1) / ...
-%     sum(subjdat(:,1) == 1);
-%   if H == 1
-%     H = 0.99;
-%   end
-%   FA = sum(subjdat(:,1) == 0 & subjdat(:,2) == 1) / ...
-%     sum(subjdat(:,1) == 0);
-%   if FA == 0
-%     FA = 0.01;
-%   end
-%   
-%   dprime(isub,1) = subj_ctr; %keep track of subj_idx to drop subjects in table below
-%   dprime(isub,2) = norminv(H) - norminv(FA);
+  %   %  compute dprime 1-back, keep track of low subjects NO done in plotSDT_DDMpars
+  %   subjdat = [stimulus(subj_idx == subj_ctr & stim == 1) response(subj_idx == subj_ctr & stim == 1)]; % stim=1: 1back
+  %   subjdat = subjdat(all(~isnan(subjdat),2),:); % col1 stimulus, col2 response
+  %   H = sum(subjdat(:,1) == 1 & subjdat(:,2) == 1) / ...
+  %     sum(subjdat(:,1) == 1);
+  %   if H == 1
+  %     H = 0.99;
+  %   end
+  %   FA = sum(subjdat(:,1) == 0 & subjdat(:,2) == 1) / ...
+  %     sum(subjdat(:,1) == 0);
+  %   if FA == 0
+  %     FA = 0.01;
+  %   end
+  %
+  %   dprime(isub,1) = subj_ctr; %keep track of subj_idx to drop subjects in table below
+  %   dprime(isub,2) = norminv(H) - norminv(FA);
   
   subj_ctr = subj_ctr+1;
 end
 
-% % % is target presence correlated with novelty? not good. 
+% % % is target presence correlated with novelty? not good.
 % % % seems taking the whole block for familiarity does not work r= -0.9816
 % % % what about only looking Nback trials back?? Nope, only 2 lures
 % corrdat = [stimulus novelty];

@@ -78,7 +78,7 @@ def run_biasmodel_early(id):
         data = hddm.load_csv('/home/mpib/kloosterman/MATLAB/COBRA/123back_bias_novelvsfam/data/COBRA_DDMdata_drop_lowdprime.csv')
                              
     data = data.dropna()
-    data = data[data.late==0]
+    data = data[data.early==1]
     data = data[data.rt > 0.2] # drop too fast RT's
     m = hddm.HDDMStimCoding(data, stim_col='stimulus', split_param='v', drift_criterion=True, bias=True, 
                             depends_on={'v':'stim', 'a':'stim', 't':'stim', 'dc':'stim', 'z':'stim' }, p_outlier=0.05,) # , include='all'
@@ -96,7 +96,7 @@ def run_biasmodel_late(id):
         data = hddm.load_csv('/home/mpib/kloosterman/MATLAB/COBRA/123back_bias_novelvsfam/data/COBRA_DDMdata_drop_lowdprime.csv')
                              
     data = data.dropna()
-    data = data[data.early==0]
+    data = data[data.late==1]
     data = data[data.rt > 0.2] # drop too fast RT's
     m = hddm.HDDMStimCoding(data, stim_col='stimulus', split_param='v', drift_criterion=True, bias=True, 
                             depends_on={'v':'stim', 'a':'stim', 't':'stim', 'dc':'stim', 'z':'stim' }, p_outlier=0.05,) # , include='all'
