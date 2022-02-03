@@ -17,10 +17,10 @@ addpath('/Users/kloosterman/Dropbox/tardis_code/MATLAB/tools/custom_tools/plotti
 
 PREIN = '/Users/kloosterman/Dropbox/PROJECTS/COBRA/hddm/123back_bias_novelvsfam/data/';
 cd(PREIN)
-time = 'early';
+time = ''; % early_ late_
 % % % % N=152, only early trials in block
 csv = readtable(fullfile(PREIN, 'COBRA_DDMdata_drop_lowdprime.csv'));
-ddm = readtable(fullfile(PREIN, sprintf('params_run_biasmodel_%s_drop_lowdprime.csv', time)));
+ddm = readtable(fullfile(PREIN, sprintf('params_run_biasmodel_%sdrop_lowdprime.csv', time)));
 
 % % % % % N=152, only early trials in block
 % csv = readtable('/Users/kloosterman/Dropbox/PROJECTS/COBRA/hddm/123back_bias_novelvsfam/data/COBRA_DDMdata_drop_lowdprime.csv');
@@ -138,7 +138,7 @@ for ipar = 1:5
   subplot(nrow,ncol,ipar+im)
   data = squeeze(behav.ddm.estimates(1:3,:,ipar))';
   plotspreadfig(data, 6, behav.condleg);
-  title(sprintf('%s\nN=%d', behav.ddm.pardimord{ipar}, length(data)))
+  title(sprintf('%s\nN=%d %s', behav.ddm.pardimord{ipar}, length(data), time))
 end
 saveas(f, sprintf('COBRA_SDTvsDDM_%s.png', time))
 orient landscape
