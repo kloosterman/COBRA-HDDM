@@ -15,13 +15,20 @@ addpath('/Users/kloosterman/Dropbox/tardis_code/MATLAB/tools/custom_tools/plotti
 % csv = readtable('/Users/kloosterman/Dropbox/PROJECTS/COBRA/hddm/123back_bias_novelvsfam/data/COBRA_DDMdata_drop_lowdprime.csv');
 % ddm = readtable('/Users/kloosterman/Dropbox/PROJECTS/COBRA/hddm/123back_bias_novelvsfam/data/params__biasmodel_drop_lowdprime.csv');
 
+PREIN = '/Users/kloosterman/Dropbox/PROJECTS/COBRA/hddm/123back_bias_novelvsfam/data/';
+cd(PREIN)
+time = 'early';
+% % % % N=152, only early trials in block
+csv = readtable(fullfile(PREIN, 'COBRA_DDMdata_drop_lowdprime.csv'));
+ddm = readtable(fullfile(PREIN, sprintf('params_run_biasmodel_%s_drop_lowdprime.csv', time)));
+
 % % % % % N=152, only early trials in block
 % csv = readtable('/Users/kloosterman/Dropbox/PROJECTS/COBRA/hddm/123back_bias_novelvsfam/data/COBRA_DDMdata_drop_lowdprime.csv');
 % ddm = readtable('/Users/kloosterman/Dropbox/PROJECTS/COBRA/hddm/123back_bias_novelvsfam/data/params_run_biasmodel_early_drop_lowdprime.csv');
 
-% % % N=152, only late trials in block
-csv = readtable('/Users/kloosterman/Dropbox/PROJECTS/COBRA/hddm/123back_bias_novelvsfam/data/COBRA_DDMdata_drop_lowdprime.csv');
-ddm = readtable('/Users/kloosterman/Dropbox/PROJECTS/COBRA/hddm/123back_bias_novelvsfam/data/params_run_biasmodel_late_drop_lowdprime.csv');
+% % % % N=152, only late trials in block
+% csv = readtable('/Users/kloosterman/Dropbox/PROJECTS/COBRA/hddm/123back_bias_novelvsfam/data/COBRA_DDMdata_drop_lowdprime.csv');
+% ddm = readtable('/Users/kloosterman/Dropbox/PROJECTS/COBRA/hddm/123back_bias_novelvsfam/data/params_run_biasmodel_late_drop_lowdprime.csv');
 
 
 
@@ -33,8 +40,6 @@ ddm = readtable('/Users/kloosterman/Dropbox/PROJECTS/COBRA/hddm/123back_bias_nov
 % csv = readtable('/Users/kloosterman/Dropbox/PROJECTS/COBRA/hddm/123back_bias_novelvsfam/data/COBRA_DDMdata_drop_lowdprime_and_gelman_rubin2.csv');
 % ddm = readtable('/Users/kloosterman/Dropbox/PROJECTS/COBRA/hddm/123back_bias_novelvsfam/data/params__biasmodel_dprimedropped_R-Gdropped2.csv');
 % rub = readtable('/Users/kloosterman/Dropbox/PROJECTS/COBRA/hddm/123back_bias_novelvsfam/data/gelman_rubin_vals_dprimedropped_R-Gdropped2.csv');
-
-cd('/Users/kloosterman/Dropbox/PROJECTS/COBRA/hddm/123back_bias_novelvsfam/data/')
 
 
 disp 'remove NaN trials'
@@ -135,9 +140,9 @@ for ipar = 1:5
   plotspreadfig(data, 6, behav.condleg);
   title(sprintf('%s\nN=%d', behav.ddm.pardimord{ipar}, length(data)))
 end
-saveas(f,'COBRA_SDTvsDDMlate.png')
+saveas(f, sprintf('COBRA_SDTvsDDM_%s.png', time))
 orient landscape
-saveas(f,'COBRA_SDTvsDDMlate.pdf')
+saveas(f, sprintf('COBRA_SDTvsDDM_%s.pdf', time))
 disp 'done'
 
 %% corr dc vs  RTs yes no error correct
