@@ -105,6 +105,42 @@ def run_biasmodel_late(id):
     # m.sample(1000, burn=250, dbname= os.path.join(path, 'db_bias%i'%id), db='pickle')
     return m
 
+def run_biasmodel_early_no_z(id):
+    import hddm 
+    import platform
+    if platform.system() == 'Darwin':
+        data = hddm.load_csv('/Users/kloosterman/Dropbox/PROJECTS/COBRA/hddm/123back_bias_novelvsfam/data/COBRA_DDMdata_drop_lowdprime.csv')
+    else:
+        data = hddm.load_csv('/home/mpib/kloosterman/MATLAB/COBRA/123back_bias_novelvsfam/data/COBRA_DDMdata_drop_lowdprime.csv')
+                             
+    data = data.dropna()
+    data = data[data.early==1]
+    data = data[data.rt > 0.2] # drop too fast RT's
+    m = hddm.HDDMStimCoding(data, stim_col='stimulus', split_param='v', drift_criterion=True, bias=False, 
+                            depends_on={'v':'stim', 'a':'stim', 't':'stim', 'dc':'stim', }, p_outlier=0.05,) # , include='all'
+    m.find_starting_values()
+    m.sample(1000, burn=250, dbname='/Users/kloosterman/Dropbox/PROJECTS/COBRA/hddm/123back_bias_novelvsfam/data/db_bias%i'%id, db='pickle')
+    # m.sample(1000, burn=250, dbname= os.path.join(path, 'db_bias%i'%id), db='pickle')
+    return m
+
+def run_biasmodel_late_no_z(id):
+    import hddm 
+    import platform
+    if platform.system() == 'Darwin':
+        data = hddm.load_csv('/Users/kloosterman/Dropbox/PROJECTS/COBRA/hddm/123back_bias_novelvsfam/data/COBRA_DDMdata_drop_lowdprime.csv')
+    else:
+        data = hddm.load_csv('/home/mpib/kloosterman/MATLAB/COBRA/123back_bias_novelvsfam/data/COBRA_DDMdata_drop_lowdprime.csv')
+                             
+    data = data.dropna()
+    data = data[data.late==1]
+    data = data[data.rt > 0.2] # drop too fast RT's
+    m = hddm.HDDMStimCoding(data, stim_col='stimulus', split_param='v', drift_criterion=True, bias=False, 
+                            depends_on={'v':'stim', 'a':'stim', 't':'stim', 'dc':'stim', }, p_outlier=0.05,) # , include='all'
+    m.find_starting_values()
+    m.sample(1000, burn=250, dbname='/Users/kloosterman/Dropbox/PROJECTS/COBRA/hddm/123back_bias_novelvsfam/data/db_bias%i'%id, db='pickle')
+    # m.sample(1000, burn=250, dbname= os.path.join(path, 'db_bias%i'%id), db='pickle')
+    return m
+
 def run_biasmodel_middle(id):
     import hddm 
     import platform
@@ -138,23 +174,23 @@ from IPython.parallel import Client
 v = Client()[:]
 
 # run model
-jobs = v.map(run_biasmodel_early, range(5)) # 4 is the number of CPUs
+jobs = v.map(run_biasmodel_late_no_z, range(5)) # 4 is the number of CPUs
 
 models = jobs.get()
 
 a = gelman_rubin(models)
 b = pd.DataFrame.from_dict(a, orient='index')
-b.to_csv('run_biasmodel_early_gelman_rubin_vals_drop_lowdprime.csv')
+b.to_csv('run_biasmodel_late_no_z_gelman_rubin_vals_drop_lowdprime.csv')
 
 # Create a new model that has all traces concatenated
 # of individual models.
 m = kabuki.utils.concat_models(models)
 
 #%% export data
-m.save('hddmmodel_run_biasmodel_early_drop_lowdprime') # save to file
+m.save('hddmmodel_run_biasmodel_late_no_z_drop_lowdprime') # save to file
 
 test = m.gen_stats()
-test.to_csv('params_run_biasmodel_early_drop_lowdprime.csv' )
+test.to_csv('params_run_biasmodel_late_no_z_drop_lowdprime.csv' )
 
 #%% plotting and model fit checks 
 # a = m.plot_posteriors_conditions()
