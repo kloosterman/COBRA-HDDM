@@ -5,13 +5,14 @@ addpath('/Users/kloosterman/Dropbox/tardis_code/MATLAB/tools/custom_tools/plotti
 PREIN = '/Users/kloosterman/Dropbox/PROJECTS/COBRA/hddm/123back_bias_novelvsfam/data/';
 cd(PREIN)
 time = {'early' 'late'};
+timename = {'early_no_z' 'late_no_z'};
 
 % behav_earlylate;
 for itime = 1:2
   csv = readtable(fullfile(PREIN, 'COBRA_DDMdata_drop_lowdprime.csv'));
   csv = csv(csv.(time{itime})==1, :); % select early or late trials
   
-  ddm = readtable(fullfile(PREIN, sprintf('params_run_biasmodel_%s_drop_lowdprime.csv', time{itime})));
+  ddm = readtable(fullfile(PREIN, sprintf('params_run_biasmodel_%s_drop_lowdprime.csv', timename{itime})));
   
   disp 'remove NaN trials'
   csv = rmmissing(csv);
@@ -70,7 +71,8 @@ for itime = 1:2
   end
   
   behav.ddm=[];
-  behav.ddm.pardimord = {'a' 'v' 't' 'z' 'dc'};
+%   behav.ddm.pardimord = {'a' 'v' 't' 'z' 'dc'};
+  behav.ddm.pardimord = {'a' 'v' 't' 'dc'};
   for icond=1:3
     dat = ddm(contains(ddm.Var1, ['(' behav.condleg{icond} ')']),:);
     % TODO match ddm and csv data using COBRA_ID, makes sure ID's match
@@ -123,7 +125,7 @@ data=cat(4,behav(1).ddm.estimates, behav(2).ddm.estimates);
 condcolors = [1 0.5 0.5; 0.5 0.5 1; 0.5 1 0.5;];
 cols = {'r' 'r' 'b' 'b' 'g' 'g' };
 lab = {'1back early' '1back late' '2back early' '2back late' '3back early' '3back late' };
-for ipar = 1:5
+for ipar = 1:4
   %   for itime=1:2
   subplot(nrow,ncol,ipar)
 %   plotdat = squeeze(data([1:3,5],:,ipar,:));
