@@ -152,29 +152,7 @@ for isub = 1:nsub % 131 has only 27 blocks
       %       % has stim info:
       %       block(1).MainBlockHapps
       trial_ctr = trial_ctr + 1;
-      %       if iblock < 10 % 2/3 of data (27 blocks)
-      %         early(end+1,1) = 1;
-      %         late(end+1,1) = 0;
-      %       elseif iblock > 9 && iblock < 19 % 2/3 of data
-      %         early(end+1,1) = 1;
-      %         late(end+1,1) = 1;
-      %       elseif iblock > 18
-      %         early(end+1,1) = 0;
-      %         late(end+1,1) = 1;
-      %       end
-      
-      
-      %       if itrial < 9 % 1:8
-      %         early(end+1,1) = 1;
-      %         late(end+1,1) = 0;
-      %       elseif itrial > 4 % && itrial <= 8 % trialno 5,6,7
-      %         early(end+1,1) = 1;
-      %         late(end+1,1) = 1;
-      %       elseif itrial >= 4 % 7,8,9,10
-      %         early(end+1,1) = 0;
-      %         late(end+1,1) = 1;
-      %       end
-      
+
       if ismember(itrial, 1:4)
         early(end+1,1)  = 1;
         late(end+1,1) = 0;
@@ -185,32 +163,7 @@ for isub = 1:nsub % 131 has only 27 blocks
         early(end+1,1) = 0;
         late(end+1,1)  = 1;
       end
-      
-      %       if ~ismember(itrial, 1:10)
-      %         error('weird trialno!')
-      %       end
-      %       if nback_cond == 1
-      %         if ismember(itrial, 1:8)
-      %           timeinblock(end+1,1) = 1;
-      %         elseif ismember(itrial, 4:10)
-      %           timeinblock(end+1,1) = 2;
-      %         end
-      %       elseif nback_cond == 2
-      %         if ismember(itrial, 1:8)
-      %           timeinblock(end+1,1) = 1;
-      %         elseif ismember(itrial, 5:10)
-      %           timeinblock(end+1,1) = 2;
-      %         end
-      %       elseif nback_cond == 3
-      %         if ismember(itrial, 1:8)
-      %           timeinblock(end+1,1) = 1;
-      %         elseif ismember(itrial, 6:10)
-      %           timeinblock(end+1,1) = 2;
-      %         end
-      %       else
-      %         disp('Unknown condition??')
-      %       end
-      
+            
       
     end
   end

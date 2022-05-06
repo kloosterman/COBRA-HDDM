@@ -49,7 +49,11 @@ subj = transpose(unique(csv.subj_idx));
 nsub = length(subj);
 behav=[];
 behav.condleg = { '1'  '2'  '3' '2-1' '3-2'};
-behav.modelfree_behavior = {'meanRT' 'sdRT' 'meanRTyes' 'meanRTno' 'meanRTcorrect' 'meanRTerror' 'meanRTYescorrect' 'meanRTNocorrect' 'accuracy' 'H' 'FA' 'propcorrect' 'dprime' 'criterion' 'prop_yes' };
+behav.modelfree_behavior = ...
+  {'meanRT' 'sdRT' 'meanRTyes' 'meanRTno' 'meanRTcorrect'...
+  'meanRTerror' 'meanRTYescorrect' 'meanRTNocorrect' 'accuracy' 'H' ...
+  'FA' 'propcorrect' 'dprime' 'criterion' 'prop_yes' ...
+  'accuracy_Yes', 'accuracyNo' 'RTyescorrect' 'RTnocorrect'};
 behav.modelfree = NaN(5, length(subj), length(behav.modelfree_behavior) );
 
 for icond=1:3
@@ -67,7 +71,8 @@ for icond=1:3
     behav.modelfree(icond,isub,8)   = mean(subjdat.rt(subjdat.stimulus == 0 & subjdat.response == 0));
     
     behav.modelfree(icond,isub,9) = sum(subjdat.stimulus == subjdat.response) / ...
-      numel(subjdat.stimulus == subjdat.response);    
+      numel(subjdat.stimulus == subjdat.response);
+    
     behav.modelfree(icond,isub,10) = sum(subjdat.stimulus == 1 & subjdat.response == 1) / ...
        sum(subjdat.stimulus == 1);
      if behav.modelfree(icond,isub,10) == 1
@@ -84,7 +89,21 @@ for icond=1:3
      behav.modelfree(icond,isub,13) = norminv(behav.modelfree(icond,isub,10)) - norminv(behav.modelfree(icond,isub,11));
      behav.modelfree(icond,isub,14) = -0.5*(norminv(behav.modelfree(icond,isub,10))+norminv(behav.modelfree(icond,isub,11)));
      behav.modelfree(icond,isub,15) = sum(subjdat.response == 1) / size(subjdat,1);
+
+     % accuracy for yes responses
+     behav.modelfree(icond,isub,16) = sum(subjdat.stimulus == 1 & subjdat.response == 1 ) / ...
+       sum( subjdat.stimulus == 1 );
+     % accuracy for no responses
+     behav.modelfree(icond,isub,17) = sum(subjdat.stimulus == 0 & subjdat.response == 0 ) / ...
+       sum( subjdat.stimulus == 0 );
+     
+     % accuracy for yes correct responses
+     behav.modelfree(icond,isub,18)   = mean(subjdat.rt(subjdat.stimulus == 1 & subjdat.response == 1));
+     behav.modelfree(icond,isub,19)   = mean(subjdat.rt(subjdat.stimulus == 0 & subjdat.response == 0));
+
      behav.COBRA_ID(:,isub) = subjdat.COBRA_ID(1);
+     
+     
   end
 end
 
@@ -113,11 +132,19 @@ end
 behav.ddm.estimates(4,:,:) = behav.ddm.estimates(2,:,:) - behav.ddm.estimates(1,:,:);
 behav.ddm.estimates(5,:,:) = behav.ddm.estimates(3,:,:) - behav.ddm.estimates(2,:,:);
 
+behav.modelfree_dimord = 'condition_subj_behavtype';
 save COBRA_behavior.mat behav
+% modelfree = permute(behav.modelfree, [2 3 1])
+% modelfree(:,:)
+% T = table(behav.modelfree, 'VariableNames', behav.modelfree_behavior)
+
 
 %% % plotting modelfree
 close all
-plotmeas = {'dprime' 'criterion' 'prop_yes' 'meanRT' 'meanRTyes' 'meanRTno' 'meanRTcorrect' 'meanRTerror' 'sdRT' 'accuracy' 'propcorrect' };
+plotmeas = {'dprime' 'criterion' 'prop_yes' 'meanRT'...
+  'meanRTyes' 'meanRTno' 'meanRTcorrect' 'meanRTerror' 'sdRT' ...
+  'accuracy' 'propcorrect' 'accuracy_Yes', 'accuracyNo' ...
+  'RTyescorrect' 'RTnocorrect'};
 f = figure; iplot=0;
 ncol = length(plotmeas);
 nrow = 2;
