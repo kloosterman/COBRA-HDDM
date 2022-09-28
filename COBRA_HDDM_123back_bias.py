@@ -174,36 +174,46 @@ from IPython.parallel import Client
 v = Client()[:]
 
 # run model
-jobs = v.map(run_biasmodel, range(5)) # 4 is the number of CPUs
+jobs = v.map(run_basicmodel, range(5)) # 4 is the number of CPUs
 
 models = jobs.get()
 
-a = gelman_rubin(models)
-b = pd.DataFrame.from_dict(a, orient='index')
-b.to_csv('run_biasmodel_gelman_rubin_vals_drop_lowdprime.csv')
+# a = gelman_rubin(models)
+# b = pd.DataFrame.from_dict(a, orient='index')
+# b.to_csv('run_biasmodel_gelman_rubin_vals_drop_lowdprime.csv')
 
 # Create a new model that has all traces concatenated
 # of individual models.
 m = kabuki.utils.concat_models(models)
 
 #%% export data
-m.save('hddmmodel_run_biasmodel_drop_lowdprime') # save to file
+m.save('hddmmodel_run_basicmodel_drop_lowdprime') # save to file
 
 test = m.gen_stats()
-test.to_csv('params_run_biasmodel_drop_lowdprime.csv' )
+test.to_csv('params_run_basicmodel_drop_lowdprime.csv' )
 
 #%% plotting and model fit checks 
 # a = m.plot_posteriors_conditions()
 # plt.savefig('plot_posteriors_conditions.pdf')
 # m.plot_posteriors(['a', 't', 'v', 'dc', 'z'])
 
-# m.plot_posterior_predictive(figsize=(100, 50), ) # bins=1000
+m.plot_posterior_predictive(figsize=(27, 20), value_range= np.linspace(-1.5, 1.5, 100), columns=12, bins=10, save=True, path='/Users/kloosterman/Dropbox/PROJECTS/COBRA/hddm/123back_bias_novelvsfam/data/plots2/basic', format='pdf')
 
-# m.plot_posterior_predictive(figsize=(100, 50), value_range= np.linspace(-1.5, 1.5, 10)) # bins=1000
+# m.plot_posterior_quantiles(samples=1, value_range= (0.25, 1.5), hexbin=False, columns=12, figsize=(27, 30), save=True, path='/Users/kloosterman/Dropbox/PROJECTS/COBRA/hddm/123back_bias_novelvsfam/data/plots2', format='pdf')
 
-# # m.plot_posterior_quantiles(samples=3, columns=3, figsize=(100, 50))
-# plt.show()
-# plt.savefig('modelfitsHDDMbiasmodel_late.pdf')
+ppc_data = hddm.utils.post_pred_gen(m, samples=50)
+ppc_data.to_csv('data_simulated_basicmodel.csv')
+m.data.to_csv('data_observed_basicmodel.csv')
+
+data=m.data
+hddm.utils.post_pred_stats(data, ppc_data) # ff kijken
+ppc_data.head(10)
+ppc_compare = hddm.utils.post_pred_stats(data, ppc_data)
+print(ppc_compare)
+ppc_stats = hddm.utils.post_pred_stats(data, ppc_data, call_compare=False)
+print(ppc_stats.head())
+
+
 
 
 # TODO LATER fix statsmodels
