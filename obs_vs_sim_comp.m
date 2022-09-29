@@ -1,7 +1,10 @@
 %% quantile prob plots of observed vs simulated data
 
-simdata = readtable('/Users/kloosterman/Dropbox/PROJECTS/COBRA/hddm/123back_bias_novelvsfam/data/data_simulated.csv');
-obsdata = readtable('/Users/kloosterman/Dropbox/PROJECTS/COBRA/hddm/123back_bias_novelvsfam/data/data_observed.csv');
+% simdata = readtable('/Users/kloosterman/Dropbox/PROJECTS/COBRA/hddm/123back_bias_novelvsfam/data/data_simulated.csv');
+% obsdata = readtable('/Users/kloosterman/Dropbox/PROJECTS/COBRA/hddm/123back_bias_novelvsfam/data/data_observed.csv');
+
+simdata = readtable('/Users/kloosterman/Dropbox/PROJECTS/COBRA/hddm/123back_bias_novelvsfam/data/data_simulated_basicmodel.csv');
+obsdata = readtable('/Users/kloosterman/Dropbox/PROJECTS/COBRA/hddm/123back_bias_novelvsfam/data/data_observed_basicmodel.csv');
 
 %% make quantiles observed data
 % quantiles = [0 20 40 60 80 100];
