@@ -7,12 +7,12 @@
 % obsdata = readtable('/Users/kloosterman/Dropbox/PROJECTS/COBRA/hddm/123back_bias_novelvsfam/data/data_observed_basicmodel.csv');
 
 PREIN = '/Users/kloosterman/Dropbox/PROJECTS/COBRA/hddm/123back_bias_novelvsfam/data/';
-modelnames = {'avt model' 'avt + dc + z model'};
-model_filenames = {'basicmodel.csv', 'fullbiasmodel.csv' };
+modelnames = {'avt + dc + z model' 'avt + dc model' 'avt + z model' 'avt model' };
+model_filenames = {'fullbiasmodel.csv', 'biasmodel_dconly.csv','biasmodel_zonly.csv', 'basicmodel.csv' };
 
 %% make quantiles observed data
-% quantiles = [0 20 40 60 80 100];
-quantiles = [10 20 40 60 80 90];
+quantiles = [0.5 20 40 60 80 99.5];
+% quantiles = [10 20 40 60 80 90];
 % quantiles = [10 30 50 70 90];
 % quantiles = [0.5 10 30 50 70 90 99.5];
 nbins = length(quantiles)-1;
@@ -41,7 +41,7 @@ for imodel = 1:length(modelnames)
         dat = [dat bin]; % append
         for ibin = 1:nbins % get proportion responses per quantile
           for icorr = 0:1 % incorrect and correct
-            bindat(imodel,isub, istim+1, ibin, icond-1, icorr+1, 1 ) = median(dat(dat(:,3)==ibin & dat(:,2) == icorr, 1)); %mean RT per bin and correct/incorrect
+            bindat(imodel,isub, istim+1, ibin, icond-1, icorr+1, 1 ) = mean(dat(dat(:,3)==ibin & dat(:,2) == icorr, 1)); %mean RT per bin and correct/incorrect
             bindat(imodel,isub, istim+1, ibin, icond-1, icorr+1, 2 ) = length(dat(dat(:,3)==ibin & dat(:,2) == icorr, 2)) ./ length(find(dat(:,3)==ibin)); %correctness
           end
         end
@@ -54,7 +54,7 @@ for imodel = 1:length(modelnames)
   % absent
   datasets_sim = unique(simdata.sample);
   
-  for idata = 1:10%length(datasets_sim)
+  for idata = 1:3%length(datasets_sim)
     disp(idata)
     curdat = simdata(simdata.sample==datasets_sim(idata),:);
     for isub = 1:length(SUBJ)
@@ -69,7 +69,7 @@ for imodel = 1:length(modelnames)
           dat = [dat bin]; % append
           for ibin = 1:nbins % get proportion responses per quantile
             for icorr = 0:1 % incorrect and correct
-              bindat_sim(imodel,isub, idata, istim+1, ibin, icond-1, icorr+1, 1 ) = median(dat(dat(:,3)==ibin & dat(:,2) == icorr, 1)); %mean RT per bin and correct/incorrect
+              bindat_sim(imodel,isub, idata, istim+1, ibin, icond-1, icorr+1, 1 ) = mean(dat(dat(:,3)==ibin & dat(:,2) == icorr, 1)); %mean RT per bin and correct/incorrect
               bindat_sim(imodel,isub, idata, istim+1, ibin, icond-1, icorr+1, 2 ) = length(dat(dat(:,3)==ibin & dat(:,2) == icorr, 2)) ./ length(find(dat(:,3)==ibin)); %correctness
             end
           end
@@ -107,7 +107,7 @@ for imodel = 1:length(modelnames)
       
       plot(dat_x(:), dat_y(:), '-x')
       %     quantile_leg{ibin} = sprintf('q %1.2f', quantiles(ibin+1)/100-0.1);
-      quantile_leg{ibin} = sprintf('q %d-%d', quantiles(ibin), quantiles(ibin+1) );
+      quantile_leg{ibin} = sprintf('q %g-%g', quantiles(ibin), quantiles(ibin+1) );
     end
     for idata = 1:size(bindat_sim_avg,2)
       % plot the sim data
