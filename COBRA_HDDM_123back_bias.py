@@ -66,7 +66,8 @@ def run_biasmodel(id):
     m = hddm.HDDMStimCoding(data, stim_col='stimulus', split_param='v', drift_criterion=True, bias=True, 
                             depends_on={'v':'stim', 'a':'stim', 't':'stim', 'dc':'stim', 'z':'stim' }, p_outlier=0.05,) # , include='all'
     m.find_starting_values()
-    m.sample(5000, burn=2500, dbname='/Users/kloosterman/Dropbox/PROJECTS/COBRA/hddm/123back_bias_novelvsfam/data/db_bias%i'%id, db='pickle')
+    # m.sample(5000, burn=2500, dbname='/Users/kloosterman/Dropbox/PROJECTS/COBRA/hddm/123back_bias_novelvsfam/data/db_bias%i'%id, db='pickle')
+    m.sample(1000, burn=500, dbname='/Users/kloosterman/Dropbox/PROJECTS/COBRA/hddm/123back_bias_novelvsfam/data/db_bias%i'%id, db='pickle')
     return m
 
 def run_biasmodel_dconly(id):
@@ -77,6 +78,7 @@ def run_biasmodel_dconly(id):
     m = hddm.HDDMStimCoding(data, stim_col='stimulus', split_param='v', drift_criterion=True, bias=False, 
                             depends_on={'v':'stim', 'a':'stim', 't':'stim', 'dc':'stim' }, p_outlier=0.05,) # , include='all'
     m.find_starting_values()
+    # m.sample(5000, burn=2500, dbname='/Users/kloosterman/Dropbox/PROJECTS/COBRA/hddm/123back_bias_novelvsfam/data/db_bias%i'%id, db='pickle')
     m.sample(5000, burn=2500, dbname='/Users/kloosterman/Dropbox/PROJECTS/COBRA/hddm/123back_bias_novelvsfam/data/db_bias%i'%id, db='pickle')
     return m
 

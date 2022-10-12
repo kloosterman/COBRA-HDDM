@@ -7,11 +7,19 @@
 % obsdata = readtable('/Users/kloosterman/Dropbox/PROJECTS/COBRA/hddm/123back_bias_novelvsfam/data/data_observed_basicmodel.csv');
 
 PREIN = '/Users/kloosterman/Dropbox/PROJECTS/COBRA/hddm/123back_bias_novelvsfam/data/';
-modelnames = {'avt + dc + z model' 'avt + dc model' 'avt + z model' 'avt model' };
-model_filenames = {'fullbiasmodel.csv', 'biasmodel_dconly.csv','biasmodel_zonly.csv', 'basicmodel.csv' };
+modelnames = {'avt + dc + z model'  'avt model'  'avt + z model' 'avt + dc model' };
+model_filenames = {'fullbiasmodel.csv', 'basicmodel.csv', 'biasmodel_zonly.csv', 'biasmodel_dconly.csv' };
+% DIC
+% full bias model:  22334
+% basic model:      22681
+% z_only model:    23200
+% dc only:              23836
+
+model_dic = [22334 22681 23200 23836];
 
 %% make quantiles observed data
-quantiles = [0.5 20 40 60 80 99.5];
+% quantiles = [0.5 20 40 60 80 99.5];
+quantiles = [0.5 10 30 50 70 90 99.5];
 % quantiles = [10 20 40 60 80 90];
 % quantiles = [10 30 50 70 90];
 % quantiles = [0.5 10 30 50 70 90 99.5];
@@ -22,7 +30,8 @@ bindat_sim = [];
 for imodel = 1:length(modelnames)
   
   simdata = readtable(fullfile(PREIN, ['data_simulated_' model_filenames{imodel}] ));
-  simdata = simdata(abs(simdata.rt) < 1.5,:);
+  simdata = simdata(abs(simdata.rt) < 1.5,:); % rt's longer not possible
+  simdata = simdata(abs(simdata.rt) > 0.2,:); % short rt's dropped
   
   obsdata = readtable(fullfile(PREIN, ['data_observed_' model_filenames{imodel}] ));
   
@@ -54,7 +63,7 @@ for imodel = 1:length(modelnames)
   % absent
   datasets_sim = unique(simdata.sample);
   
-  for idata = 1:3%length(datasets_sim)
+  for idata = 1:length(datasets_sim)
     disp(idata)
     curdat = simdata(simdata.sample==datasets_sim(idata),:);
     for isub = 1:length(SUBJ)
@@ -86,17 +95,17 @@ bindat_sim_avg = squeeze(nanmean(bindat_sim,2)); % stim bins cond incorrect/corr
 titnames = {'Target absent' 'Target present'};
 SAV=1;
 YLIM = [0.5 1.3];
-f = figure; f.Position = [        1000        1115         625         150*length(modelnames)];
+f = figure; f.Position = [        1000        1115         625         160*length(modelnames)];
 iplot=0;
 for imodel = 1:length(modelnames)
   quantile_leg = {};
   for istim = 1:2 % absent, present
     iplot=iplot+1;
     subplot(length(modelnames),2,iplot); hold on
-    title(sprintf('%s: %s', modelnames{imodel}, titnames{istim}))
+    title(sprintf('%s, dic %d\n%s', modelnames{imodel}, model_dic(imodel), titnames{istim}))
     xlabel('Proportion of responses');
     ylabel('Reaction time (s)')
-    ylim(YLIM)
+%     ylim(YLIM)
     % plot the observed data
     for ibin = 1:nbins
       
