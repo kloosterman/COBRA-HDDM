@@ -90,7 +90,9 @@ end
 
 
 %% plot quantile prob plot
-simdat_plottype = 'errorbars';
+close all
+simdat_plottype = 'aggregate'; % singlesims
+plottype = 'errorbars';  % errorbars  ellipse
 bindat_avg = squeeze(nanmean(bindat,2)); % stim bins cond incorrect/correct RT/accuracy
 bindat_sim_avg = squeeze(nanmean(bindat_sim,2)); % stim bins cond incorrect/correct RT/accuracy
 titnames = {'Target absent' 'Target present'};
@@ -108,6 +110,7 @@ for imodel = 1:length(modelnames)
     ylabel('Reaction time (s)')
 %     ylim(YLIM)
     % plot the observed data
+    colors = [];
     for ibin = 1:nbins
       
       dat_x = squeeze(bindat_avg(imodel, istim, ibin,:,:,2 )); % RT for both conditions, correct and incorrect
@@ -115,12 +118,13 @@ for imodel = 1:length(modelnames)
       dat_x(:,2) = flipud(dat_x(:,2)); % to get the line straight through the points
       dat_y(:,2) = flipud(dat_y(:,2));
       
-      plot(dat_x(:), dat_y(:), '-x')
+      p = plot(dat_x(:), dat_y(:), '-x');
       %     quantile_leg{ibin} = sprintf('q %1.2f', quantiles(ibin+1)/100-0.1);
+      colors = [colors; p.Color];
       quantile_leg{ibin} = sprintf('q %g-%g', quantiles(ibin), quantiles(ibin+1) );
     end
     switch simdat_plottype
-      case 'dots'
+      case 'singlesims'
         for idata = 1:size(bindat_sim_avg,2)
           % plot the sim data
           for ibin = 1:nbins
@@ -130,12 +134,12 @@ for imodel = 1:length(modelnames)
             dat_x(:,2) = flipud(dat_x(:,2)); % to get the line straight through the points
             dat_y(:,2) = flipud(dat_y(:,2));
             
-            plot(dat_x(:), dat_y(:), '.k')
+            plot(dat_x(:), dat_y(:), '.k');
             %       quantile_leg{ibin} = sprintf('q %1.2f', quantiles(ibin+1)/100-0.1);
           end
         end
-      case 'errorbars'
-        bindat_sim_var = squeeze(std(bindat_sim_avg,0,2)) * 6; % ./ sqrt(size(bindat_sim_avg,2)) ; % std over simulated datasets
+      case 'aggregate'
+        bindat_sim_var = squeeze(std(bindat_sim_avg,0,2)) * 4; % ./ sqrt(size(bindat_sim_avg,2)) ; % std over simulated datasets
         for ibin = 1:nbins
           
           dat_x = squeeze(bindat_sim_avg(imodel,idata,istim, ibin,:,:,2 )); % RT for both conditions, correct and incorrect
@@ -152,18 +156,29 @@ for imodel = 1:length(modelnames)
           var_x = var_x(:);
           var_y = var_y(:);
           
-%           plot(dat_x(:), dat_y(:)); hold on
-%           yneg = dat_y - 0.5.*var_y;
-%           ypos = dat_y + 0.5.*var_y;
-%           xneg = dat_x - 0.5.*var_x;
-%           xpos = dat_x + 0.5.*var_x;
           yneg = - 0.5.*var_y;
           ypos = + 0.5.*var_y;
           xneg = - 0.5.*var_x;
           xpos = + 0.5.*var_x;
-          er = errorbar(dat_x,dat_y,yneg,ypos,xneg,xpos, '.k');
-          er.Marker = 'none';
-
+          switch plottype
+            case 'errorbars'
+              er = errorbar(dat_x,dat_y,yneg,ypos,xneg,xpos, '.');
+              er.Marker = 'o'; %'none'
+              er.MarkerSize = 2;
+              er.MarkerFaceColor = 'auto';
+              er.Color = colors(ibin,:);
+              er.CapSize = 0;
+            case 'ellipse'
+              a=1; % horizontal radius
+              b=var_y; % vertical radius
+              x0=dat_x; % x0,y0 ellipse centre coordinates
+              y0=dat_y;
+              t=-pi:0.5:pi; %0.01
+              x=x0+a*cos(t);
+              y=y0+b*sin(t);
+              plot(x,y)
+          end
+          
         end
     end
     
