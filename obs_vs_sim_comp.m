@@ -90,6 +90,7 @@ end
 
 
 %% plot quantile prob plot
+simdat_plottype = 'errorbars';
 bindat_avg = squeeze(nanmean(bindat,2)); % stim bins cond incorrect/correct RT/accuracy
 bindat_sim_avg = squeeze(nanmean(bindat_sim,2)); % stim bins cond incorrect/correct RT/accuracy
 titnames = {'Target absent' 'Target present'};
@@ -118,19 +119,55 @@ for imodel = 1:length(modelnames)
       %     quantile_leg{ibin} = sprintf('q %1.2f', quantiles(ibin+1)/100-0.1);
       quantile_leg{ibin} = sprintf('q %g-%g', quantiles(ibin), quantiles(ibin+1) );
     end
-    for idata = 1:size(bindat_sim_avg,2)
-      % plot the sim data
-      for ibin = 1:nbins
-        
-        dat_x = squeeze(bindat_sim_avg(imodel,idata,istim, ibin,:,:,2 )); % RT for both conditions, correct and incorrect
-        dat_y = squeeze(bindat_sim_avg(imodel,idata,istim, ibin,:,:,1 )); % RT for both conditions, correct and incorrect
-        dat_x(:,2) = flipud(dat_x(:,2)); % to get the line straight through the points
-        dat_y(:,2) = flipud(dat_y(:,2));
-        
-        plot(dat_x(:), dat_y(:), '.k')
-        %       quantile_leg{ibin} = sprintf('q %1.2f', quantiles(ibin+1)/100-0.1);
-      end
+    switch simdat_plottype
+      case 'dots'
+        for idata = 1:size(bindat_sim_avg,2)
+          % plot the sim data
+          for ibin = 1:nbins
+            
+            dat_x = squeeze(bindat_sim_avg(imodel,idata,istim, ibin,:,:,2 )); % RT for both conditions, correct and incorrect
+            dat_y = squeeze(bindat_sim_avg(imodel,idata,istim, ibin,:,:,1 )); % RT for both conditions, correct and incorrect
+            dat_x(:,2) = flipud(dat_x(:,2)); % to get the line straight through the points
+            dat_y(:,2) = flipud(dat_y(:,2));
+            
+            plot(dat_x(:), dat_y(:), '.k')
+            %       quantile_leg{ibin} = sprintf('q %1.2f', quantiles(ibin+1)/100-0.1);
+          end
+        end
+      case 'errorbars'
+        bindat_sim_var = squeeze(std(bindat_sim_avg,0,2)) * 6; % ./ sqrt(size(bindat_sim_avg,2)) ; % std over simulated datasets
+        for ibin = 1:nbins
+          
+          dat_x = squeeze(bindat_sim_avg(imodel,idata,istim, ibin,:,:,2 )); % RT for both conditions, correct and incorrect
+          dat_y = squeeze(bindat_sim_avg(imodel,idata,istim, ibin,:,:,1 )); % RT for both conditions, correct and incorrect
+          dat_x(:,2) = flipud(dat_x(:,2)); % to get the line straight through the points
+          dat_y(:,2) = flipud(dat_y(:,2));
+          dat_x = dat_x(:);
+          dat_y = dat_y(:);
+          
+          var_x = squeeze(bindat_sim_var(imodel,istim, ibin,:,:,2 )); % RT for both conditions, correct and incorrect
+          var_y = squeeze(bindat_sim_var(imodel,istim, ibin,:,:,1 )); % RT for both conditions, correct and incorrect
+          var_x(:,2) = flipud(var_x(:,2)); % to get the line straight through the points
+          var_y(:,2) = flipud(var_y(:,2));
+          var_x = var_x(:);
+          var_y = var_y(:);
+          
+%           plot(dat_x(:), dat_y(:)); hold on
+%           yneg = dat_y - 0.5.*var_y;
+%           ypos = dat_y + 0.5.*var_y;
+%           xneg = dat_x - 0.5.*var_x;
+%           xpos = dat_x + 0.5.*var_x;
+          yneg = - 0.5.*var_y;
+          ypos = + 0.5.*var_y;
+          xneg = - 0.5.*var_x;
+          xpos = + 0.5.*var_x;
+          er = errorbar(dat_x,dat_y,yneg,ypos,xneg,xpos, '.k');
+          er.Marker = 'none';
+
+        end
     end
+    
+        
     %   if istim==2
     legend(quantile_leg, 'Location', 'EastOutside'); legend boxon
     %   end
@@ -143,7 +180,7 @@ end
 % legend off
 if SAV
   PREOUT = '/Users/kloosterman/Dropbox/PROJECTS/COBRA/hddm/123back_bias_novelvsfam/data/plots_quantile_prob';
-  saveas(f, fullfile(PREOUT, sprintf('Quantprob_%dbins.pdf', nbins )))
-  saveas(f, fullfile(PREOUT, sprintf('Quantprob_%dbins.png', nbins )))
+  saveas(f, fullfile(PREOUT, sprintf('Quantprob_%dbins_%s.pdf', nbins, simdat_plottype )))
+  saveas(f, fullfile(PREOUT, sprintf('Quantprob_%dbins_%s.png', nbins, simdat_plottype )))
 end
 
